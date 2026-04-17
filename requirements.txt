@@ -1,0 +1,16 @@
+ipykernel
+langchain
+langchain-community
+pypdf
+openai
+faiss-cpu
+tiktoken
+langchain_openai
+langchain-pinecone
+langchain-text-splitters
+dotenv
+python-dotenv
+pinecone 
+ragas
+cohere
+pymupdf
