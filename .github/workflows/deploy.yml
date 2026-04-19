@@ -36,6 +36,10 @@ jobs:
 
       - name: Run unit tests
         run: pytest tests/unit/ -v --tb=short -q
+        env:
+          OPENAI_API_KEY: "test"
+          PINECONE_API_KEY: "test"
+          COHERE_API_KEY: "test"
 
       - name: Run integration tests
         run: pytest tests/integration/ -v --tb=short -q
