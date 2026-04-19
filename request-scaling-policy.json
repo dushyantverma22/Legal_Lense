@@ -1,0 +1,21 @@
+{
+  "TargetValue": 50.0,
+  "CustomizedMetricSpecification": {
+    "MetricName": "RequestCountPerTarget",
+    "Namespace": "AWS/ApplicationELB",
+    "Dimensions": [
+      {
+        "Name": "TargetGroup",
+        "Value": "targetgroup/legal-lense-tg/fcc671dd8543f44a"
+      },
+      {
+        "Name": "LoadBalancer",
+        "Value": "app/legal-lense-alb/752a3541615bbf7e"
+      }
+    ],
+    "Statistic": "Sum",
+    "Unit": "Count"
+  },
+  "ScaleOutCooldown": 60,
+  "ScaleInCooldown": 900
+}

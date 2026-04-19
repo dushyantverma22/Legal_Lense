@@ -1,0 +1,73 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "region": "us-east-1",
+        "title": "ECS task count",
+        "metrics": [
+          ["AWS/ECS", "RunningTaskCount",
+           "ClusterName", "legal-lense-cluster",
+           "ServiceName", "legal-lense-api"]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "region": "us-east-1",
+        "title": "CPU utilisation",
+        "metrics": [
+          ["AWS/ECS", "CPUUtilization",
+           "ClusterName", "legal-lense-cluster",
+           "ServiceName", "legal-lense-api"]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "view": "timeSeries",
+        "annotations": {
+          "horizontal": [{"value": 60, "label": "Scale target"}]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "region": "us-east-1",
+        "title": "ALB request count",
+        "metrics": [
+          ["AWS/ApplicationELB", "RequestCount",
+           "LoadBalancer", "app/legal-lense-alb/752a3541615bbf7e"]
+        ],
+        "period": 60,
+        "stat": "Sum",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "metric",
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "region": "us-east-1",
+        "title": "ALB response time (P95)",
+        "metrics": [
+          ["AWS/ApplicationELB", "TargetResponseTime",
+           "LoadBalancer", "app/legal-lense-alb/752a3541615bbf7e"]
+        ],
+        "period": 60,
+        "stat": "p95",
+        "view": "timeSeries"
+      }
+    }
+  ]
+}

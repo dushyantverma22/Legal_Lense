@@ -52,3 +52,6 @@ rebuild:
 # In Makefile, add:
 deploy:
 	./infrastructure/deploy.sh
+
+setup-scaling:
+	./infrastructure/setup_autoscaling.sh

@@ -1,6 +1,7 @@
 # src/api/main.py
 import time
 import uuid
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
@@ -23,19 +24,28 @@ log = structlog.get_logger()
 # ─── Lifespan (startup + shutdown) ────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Code before `yield` runs on startup.
-    Code after `yield` runs on shutdown.
-    
-    This replaces the deprecated @app.on_event("startup") pattern.
-    Initialise all expensive shared state here — once, not per-request.
-    """
+    # ── Startup ───────────────────────────────
     setup_logging()
     log.info("startup_beginning", index=settings.pinecone_index_name)
+
     init_vectorstore()
+
     log.info("startup_complete", status="ready")
-    yield
-    log.info("shutdown_complete")
+
+    yield  # 🚀 App runs here
+
+    # ── Graceful Shutdown ─────────────────────
+    log.info("shutdown_initiated", reason="SIGTERM received")
+
+    # If you had resources, clean them here:
+    # await db.close()
+    # await redis.close()
+    # close pinecone if needed (not required currently)
+
+    # Small delay for log flushing (optional)
+    await asyncio.sleep(0.1)
+
+    log.info("shutdown_complete", status="clean_exit")
 
 
 # ─── App ──────────────────────────────────────────────────────────────────────

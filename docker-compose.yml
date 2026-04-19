@@ -10,6 +10,7 @@ services:
       dockerfile: Dockerfile
       target: production        # use the production stage of the multi-stage build
     image: legal-lense-rag:latest
+    stop_grace_period: 35s   # give uvicorn time to gracefully shut down on docker stop
 
     ports:
       - "8000:8000"             # host:container — access at http://localhost:8000
