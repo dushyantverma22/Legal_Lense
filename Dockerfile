@@ -47,6 +47,7 @@ COPY --from=builder /install /usr/local
 COPY src/       ./src/
 COPY config/    ./config/
 COPY tests/     ./tests/  
+COPY frontend/ ./frontend/
 COPY pytest.ini .
 
 # Create the data directory that PDFs will be uploaded into.

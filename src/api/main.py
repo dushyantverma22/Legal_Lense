@@ -7,6 +7,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.responses import Response
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 import structlog
 from structlog.contextvars import clear_contextvars, bind_contextvars
@@ -66,6 +71,22 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+# Serve the frontend
+@app.get("/", response_class=FileResponse)
+async def serve_frontend():
+    """Serve the LegalLense frontend at the root URL."""
+    frontend_path = os.path.join(os.path.dirname(__file__), "../../frontend/index.html")
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path)
+    return {"message": "Frontend not found — place index.html in frontend/"}
+
+@app.get("/config.js")
+async def frontend_config():
+    """Returns JS config that the frontend can load."""
+    from fastapi.responses import Response
+    config = f"window.API_BASE = '{os.getenv('FRONTEND_API_BASE', '')}'"
+    return Response(content=config, media_type="application/javascript")
 
 @app.middleware("http")
 async def structlog_request_context(request: Request, call_next) -> Response:
