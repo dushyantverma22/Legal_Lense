@@ -83,7 +83,8 @@ def test_full_query_pipeline_returns_answer(sample_chunks, mock_pinecone, mock_c
     fake_llm_response = MagicMock()
     fake_llm_response.content = "The rent is Rs. 17,600/- per month."
 
-    with patch("langchain_openai.ChatOpenAI") as mock_llm_class:
+    # ✅ FIX: patch WHERE it's used
+    with patch("src.generation.chain.ChatOpenAI") as mock_llm_class:
         mock_llm = MagicMock()
         mock_llm.invoke.return_value = fake_llm_response
         mock_llm_class.return_value = mock_llm
