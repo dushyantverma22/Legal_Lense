@@ -1,0 +1,80 @@
+# docker-compose.yml
+version: "3.9"
+
+services:
+
+  # ── Production API ──────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production        # use the production stage of the multi-stage build
+    image: legal-lense-rag:latest
+
+    ports:
+      - "8000:8000"             # host:container — access at http://localhost:8000
+
+    env_file:
+      - .env                    # CONCEPT: secrets injected here, not in the image
+                                # Docker reads .env and sets each line as an env var
+                                # Your settings.py reads them via os.environ
+
+    volumes:
+      # CONCEPT: named volume for persistent PDF storage.
+      # Without this, uploaded PDFs disappear when the container restarts.
+      # With this, /app/data inside the container maps to a persistent Docker volume.
+      - rag_data:/app/data
+
+    restart: unless-stopped     # auto-restart on crash, but not if manually stopped
+
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s         # give uvicorn time to start before first check
+
+    # CONCEPT: resource limits prevent a runaway process from killing the host.
+    # 1 CPU and 1GB RAM is generous for a single-user RAG API.
+    # In production on ECS/Fargate these map to task CPU/memory settings.
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+
+  # ── Test runner ─────────────────────────────────────────────────────────────
+  # A separate service that runs your test suite inside Docker.
+  # This proves: "the exact environment that production uses also passes all tests."
+  # Run with: docker compose run --rm test
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production        # same image as production — intentional
+    image: legal-lense-rag:latest
+
+    env_file:
+      - .env                    # tests need real API keys for integration tests
+                                # unit tests mock everything so don't actually use them
+
+    volumes:
+      - rag_data:/app/data
+
+    # Override the CMD — run pytest instead of uvicorn
+    command: >
+      pytest tests/unit/ tests/integration/ tests/api/
+      --tb=short -q
+      --cov=src
+      --cov-report=term-missing
+
+    # Don't restart the test container — it exits when pytest finishes
+    restart: "no"
+
+
+volumes:
+  rag_data:                     # named volume managed by Docker
+                                # persists between container restarts
+                                # docker volume inspect legal-lense_rag_data to inspect

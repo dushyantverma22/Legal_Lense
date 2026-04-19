@@ -1,0 +1,44 @@
+# .dockerignore
+# Virtual environments — never copy these, pip installs fresh inside the container
+.venv/
+venv/
+env/
+
+# Python cache — not needed in the image
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Test artifacts — not needed in production image
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# Development files
+notebook/
+notebooks/
+*.ipynb
+.ipynb_checkpoints/
+
+# Secrets — NEVER copy into image
+.env
+*.env
+
+# Git history — not needed
+.git/
+.gitignore
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE configs
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/

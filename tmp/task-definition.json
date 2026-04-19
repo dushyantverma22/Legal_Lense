@@ -1,0 +1,68 @@
+{
+  "family": "legal-lense-rag",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::404459111098:role/legal-lense-ecs-execution-role",
+  "taskRoleArn": "arn:aws:iam::404459111098:role/legal-lense-ecs-task-role",
+  "containerDefinitions": [
+    {
+      "name": "legal-lense-rag",
+      "image": "404459111098.dkr.ecr.us-east-1.amazonaws.com/legal-lense-rag:latest",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "OPENAI_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:404459111098:secret:legal-lense/openai-api-key-GMc9j7"
+        },
+        {
+          "name": "PINECONE_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:404459111098:secret:legal-lense/pinecone-api-key-l4JIvm"
+        },
+        {
+          "name": "COHERE_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:404459111098:secret:legal-lense/cohere-api-key-m4HuPA"
+        }
+      ],
+      "environment": [
+        {
+          "name": "PINECONE_INDEX_NAME",
+          "value": "legal-lense-index1"
+        },
+        {
+          "name": "PINECONE_REGION",
+          "value": "us-east-1"
+        },
+        {
+          "name": "LLM_MODEL",
+          "value": "gpt-4o-mini"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/legal-lense-rag",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 20
+      },
+      "essential": true
+    }
+  ]
+}

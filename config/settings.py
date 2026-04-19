@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     pinecone_index_name: str = "legal-lense-index1"
     pinecone_cloud: str = "aws"
     pinecone_region: str = "us-east-1"
+    pinecone_host: str = "https://legal-lense-index1-j4cte4i.svc.aped-4627-b74a.pinecone.io"
     pinecone_dimension: int = 1536
 
     # Chunking config — your notebook values, now overridable
@@ -34,8 +35,10 @@ class Settings(BaseSettings):
     cohere_timeout_seconds: float = 5.0
     cohere_failure_threshold: int = 3   # open circuit after 3 failures
 
-    # Storage (local dev — overridden to S3 in production)
+    # Storage — default to container paths, override via env var for local dev
     bm25_index_path: str = "data/raw/bm25_index.pkl"
+    pdf_upload_dir: str = "data/raw"
+    eval_data_path: str = "data/eval/rag_eval_dataset.xlsx"
 
     class Config:
         env_file = ".env"

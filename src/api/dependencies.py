@@ -16,15 +16,18 @@ _chunks: list[Document] = []
 def init_vectorstore() -> PineconeVectorStore:
     global _vectorstore
 
-    embedding_model = OpenAIEmbeddings(api_key=settings.openai_api_key)
-
-    _vectorstore = PineconeVectorStore(
-        index_name=settings.pinecone_index_name,
-        embedding=embedding_model,
-        pinecone_api_key=settings.pinecone_api_key   # ✅ FIX
+    embedding_model = OpenAIEmbeddings(
+        api_key=settings.openai_api_key
     )
 
-    print(f"[deps] Pinecone vectorstore initialised: {settings.pinecone_index_name}")
+    _vectorstore = PineconeVectorStore(
+        index_name=None,  # ❗ not used in serverless
+        embedding=embedding_model,
+        pinecone_api_key=settings.pinecone_api_key,
+        host="https://legal-lense-index1-j4cte4i.svc.aped-4627-b74a.pinecone.io"  # ✅ CRITICAL
+    )
+
+    print("[deps] Pinecone vectorstore initialised via host")
     return _vectorstore
 
 
